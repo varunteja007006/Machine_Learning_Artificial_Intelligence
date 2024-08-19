@@ -9,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import AIChatSidebar from "./ai-chat-sidebar";
 import AIChatArea from "./ai-chat-area";
+import AIChatMessage from "./ai-chat-messages";
 
 interface ChatLayoutProps {
   defaultLayout?: number[];
@@ -23,6 +24,7 @@ export default function AIChatLayout({
 }: Readonly<ChatLayoutProps>) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
+  const [checked, setChecked] = React.useState(false);
 
   useEffect(() => {
     const checkScreenWidth = () => {
@@ -74,11 +76,11 @@ export default function AIChatLayout({
             "min-w-[50px] md:min-w-[70px] transition-all duration-300 ease-in-out "
         )}
       >
-        <AIChatSidebar />
+        <AIChatSidebar checked={checked} setChecked={setChecked} />
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-        <AIChatArea />
+        {!checked ? <AIChatMessage /> : <AIChatArea />}
       </ResizablePanel>
     </ResizablePanelGroup>
   );

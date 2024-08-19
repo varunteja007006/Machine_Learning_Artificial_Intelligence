@@ -23,6 +23,8 @@ ollama run llava:13b
 
 ### API Usage
 
+Docs:https://github.com/ollama/ollama/blob/main/docs/api.md
+
 ```sh
 curl http://localhost:11434/api/generate -d '{
   "model": "llava",
