@@ -79,7 +79,11 @@ export default function AIChatLayout({
         <AIChatSidebar checked={checked} setChecked={setChecked} />
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
+      <ResizablePanel
+        defaultSize={defaultLayout[1]}
+        minSize={30}
+        className="m-2 space-y-2"
+      >
         {!checked ? <AIChatMessage /> : <AIChatArea />}
       </ResizablePanel>
     </ResizablePanelGroup>

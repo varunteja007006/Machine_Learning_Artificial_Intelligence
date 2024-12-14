@@ -5,7 +5,7 @@ import React from "react";
 
 const Page = () => {
   return (
-    <div className="mt-5">
+    <div className="rounded">
       <AIChatLayout />
     </div>
   );

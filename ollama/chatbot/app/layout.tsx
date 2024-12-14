@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Signika } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/navbar/navbar";
 
-const inter = Inter({ subsets: ["latin"] });
+const signika = Signika({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={signika.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -26,7 +29,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Navbar />
-          <main className="min-h-screen min-w-[400px] px-4 py-2 overflow-y-auto">
+          <main className="min-h-screen min-w-[400px] p-2 overflow-y-auto">
             {children}
           </main>
         </ThemeProvider>

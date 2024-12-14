@@ -44,12 +44,13 @@ export default function AIChatArea() {
   return (
     <div className="min-h-[calc(100vh-10rem)]">
       <ScrollArea className="h-[calc(100vh-18rem)] w-full p-4 m-8 border">
-        <Bot />
+        {/* <Bot />
         <div
           dangerouslySetInnerHTML={{
             __html: response.replace(/\n/g, "<br />"),
           }}
-        ></div>
+        ></div> */}
+        <p>Work in progress...</p>
       </ScrollArea>
       <div className="px-8 flex items-start gap-2">
         <Textarea
