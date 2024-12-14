@@ -1,15 +1,11 @@
 import React from "react";
-
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area"; // Ensure this is the correct import for Shadcn's ScrollArea
 import { Textarea } from "@/components/ui/textarea";
+// import { Input } from "@/components/ui/input"
 import { Bot, ChevronRight, Send } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-// { role: string; content: string }
-
-// {role: "user", content: "hello"},
-// {role: "ai", content: "hello there"},
 
 const dateFormat = "HH:mm";
 
@@ -18,22 +14,11 @@ export default function AIChatArea() {
   const [prompt, setPrompt] = React.useState("");
   const [responding, setResponding] = React.useState(false);
 
+  // Set up the ref for the scrollable container
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
-  function onChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(event.target.value);
-  }
-
-  const scrollToBottom = () => {
-    // ! NOT WORKING
-    // console.log(scrollContainerRef.current);
-    // scrollContainerRef.current?.scrollTo({
-    //   top: scrollContainerRef.current.scrollHeight,
-    //   behavior: "smooth",
-    // });
-    // // scrollContainerRef.current?.scrollIntoView({
-    // //   behavior: "smooth",
-    // // });
   };
 
   const fetchResponse = async (prompt: string) => {
@@ -69,12 +54,10 @@ export default function AIChatArea() {
               localStorage.setItem("session", JSON.stringify(newState));
               return newState;
             });
-            scrollToBottom();
             break;
           }
           const chunk = decoder.decode(value, { stream: true });
           const responseChunk = JSON.parse(chunk);
-          // Process the response chunk here
           res += `${responseChunk?.response || ""} `;
         }
       }
@@ -86,21 +69,22 @@ export default function AIChatArea() {
   };
 
   const sendMessage = () => {
-    setSession((prev) => {
-      const newState = [
-        ...prev,
-        {
-          role: "user",
-          content: prompt,
-          createdOn: format(Date.now(), dateFormat),
-        },
-      ];
-      localStorage.setItem("session", JSON.stringify(newState));
-      return newState;
-    });
-    fetchResponse(prompt);
-    setPrompt("");
-    scrollToBottom();
+    if (prompt !== "") {
+      setSession((prev) => {
+        const newState = [
+          ...prev,
+          {
+            role: "user",
+            content: prompt,
+            createdOn: format(Date.now(), dateFormat),
+          },
+        ];
+        localStorage.setItem("session", JSON.stringify(newState));
+        return newState;
+      });
+      fetchResponse(prompt);
+      setPrompt("");
+    }
   };
 
   React.useEffect(() => {
@@ -113,6 +97,12 @@ export default function AIChatArea() {
       localStorage.setItem("session", session ?? "[]");
     };
   }, []);
+
+  React.useEffect(() => {
+    if (session.length > 0 && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollIntoView({ behavior: "smooth" }); //Use scrollIntoView to automatically scroll to my ref
+    }
+  }, [session.length]);
 
   return (
     <div className="overflow-hidden space-y-2">
@@ -127,10 +117,7 @@ export default function AIChatArea() {
           Clear chat
         </Button>
       </div>
-      <ScrollArea
-        ref={scrollContainerRef}
-        className="h-[calc(100vh-15rem)] w-full border-b"
-      >
+      <ScrollArea className="h-[calc(100vh-15rem)] w-full border-b">
         <div className="p-4 flex flex-col gap-2 mx-4">
           {session.map((message, index) => (
             <React.Fragment key={index}>
@@ -139,6 +126,7 @@ export default function AIChatArea() {
                   "self-start",
                   message.role === "user" && "self-end"
                 )}
+                ref={index + 1 === session.length ? scrollContainerRef : null}
               >
                 {message.role === "user" ? (
                   <ChevronRight className="w-6 h-6 shrink-0" />
@@ -167,7 +155,6 @@ export default function AIChatArea() {
           )}
         </div>
       </ScrollArea>
-
       <div className="m-2 px-2 py-4 flex items-start gap-2">
         <Textarea
           placeholder="Type your prompt here"
@@ -187,23 +174,26 @@ export default function AIChatArea() {
   );
 }
 
-const ChatterBox = (
-  props: React.PropsWithChildren<{
-    style?: React.CSSProperties;
-    className?: string;
-  }>
-) => {
-  const { children, className, ...rest } = props;
+type ChatterBoxProps = React.PropsWithChildren<{
+  style?: React.CSSProperties;
+  className?: string;
+}>;
 
-  return (
-    <div
-      className={cn(
-        "border p-4 w-fit min-w-48 max-w-[75%] flex flex-row items-start gap-2 rounded-lg border-zinc-300 dark:border-zinc-800",
-        className
-      )}
-      {...rest}
-    >
-      {children}
-    </div>
-  );
-};
+const ChatterBox = React.forwardRef<HTMLDivElement, ChatterBoxProps>(
+  ({ children, className, ...rest }: ChatterBoxProps, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "border p-4 w-fit min-w-48 max-w-[75%] flex flex-row items-start gap-2 rounded-lg border-zinc-300 dark:border-zinc-800",
+          className
+        )}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+
+ChatterBox.displayName = "ChatterBox";
